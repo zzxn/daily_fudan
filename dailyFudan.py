@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO,
 #get token via http://iyuu.cn/
 import requests
 from captcha_break import DailyFDCaptcha
+from geo_disturbance import geoDisturbance
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 def iyuu(IYUU_TOKEN):
@@ -176,6 +177,7 @@ class Zlapp(Fudan):
             city = geo_api_info["addressComponent"].get("city", "") or province
             district = geo_api_info["addressComponent"].get("district", "")
             gl_info['dailyFudan'] = " ".join(set_q((province, city, district)))
+            gl_info['geoDisturbance'] = geoDisturbance(last_info["d"]["info"]["geo_api_info"])
             gl_info = json_dumps(gl_info, indent=4, ensure_ascii=False)
             return True
         else:
@@ -207,7 +209,8 @@ class Zlapp(Fudan):
                     "province": province,
                     "city"    : city,
                     "area"    : " ".join(set_q((province, city, district))),
-                    "ismoved" : 0
+                    "ismoved" : 0,
+                    "geo_api_info" : geoDisturbance(self.last_info["geo_api_info"])
                 }
         )
         # logging.debug(self.last_info)
